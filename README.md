@@ -7,27 +7,38 @@ An intelligent application that recognizes task types and automatically employs 
 ## Features
 
 - 🧠 Automatic recognition of task type
+
 - 🔢 Financial and general calculations with high precision
+
 - 📊 Text analysis and comparison
+
 - 🔍 Web search for questions requiring research
+
 - 💬 General AI answers for simple questions
 
 ## Available Tools
 
 - **calculateSavings()**: Calculates savings totals with or without interest
+
 - **calculateGeneral()**: Performs precise mathematical calculations with detailed explanations
+
 - **compareTexts()**: Compares two texts for semantic similarities
+
 - **webSearch()**: Searches for current information on the web using Google Search API
+
 - **textSummarizer()**: Summarizes long texts
 
 ## How It Works
 
 1. The user submits a query
+
 2. The system analyzes the query to determine the appropriate tool
+
 3. The selected tool processes the query
+
 4. Results are displayed with an explanation of the system's reasoning
 
-![Example of calculation result](Screenshots/Screenshot_1.png)
+![Example of calculation result](Screenshots/Screenshot_2.png)
 
 ### For Calculations
 
@@ -37,10 +48,13 @@ The system uses specialized mathematical algorithms with financial precision. Fo
 
 This application implements a smart AI orchestration system that:
 
-1. **Analyzes queries** to identify the underlying task type
-2. **Selects specialized tools** appropriate for each task
-3. **Routes processing** to task-specific handlers
-4. **Provides transparency** by explaining tool selection decisions
+1.  **Analyzes queries** to identify the underlying task type
+
+2.  **Selects specialized tools** appropriate for each task
+
+3.  **Routes processing** to task-specific handlers
+
+4.  **Provides transparency** by explaining tool selection decisions
 
 While similar to Retrieval-Augmented Generation (RAG) systems, our approach focuses on tool selection and task routing rather than pure knowledge retrieval. This creates a more adaptable system that can handle a diverse range of queries with specialized processing strategies.
 
@@ -49,21 +63,29 @@ While similar to Retrieval-Augmented Generation (RAG) systems, our approach focu
 The user interface is designed to be intuitive and informative:
 
 - A clean input area for entering queries
+
 - Tool-labeled example cards to show the system's capabilities
+
 - Detailed results with appropriate formatting based on the query type
+
 - Transparent explanations of which tool was used and why
 
 ## Technologies
 
 - React for the frontend
+
 - Azure OpenAI API for AI functions
+
 - RapidAPI Google Search for web queries
+
 - Modern JavaScript with async/await patterns
 
 ## Installation
 
 1. Clone the repository
+
 2. Install dependencies with `npm install`
+
 3. Start the application with `npm start`
 
 ## Environment Variables
@@ -76,7 +98,11 @@ REACT_APP_RAPIDAPI_KEY="your_api_key"
 ## Example Queries
 
 - If I save 60 € per month for 5 years, how much will I have?
+
 - If I eat 3 apples every day for 3 months and an apple costs 1.20€, how much will I have spent?
+
 - What is the current status of CO₂ legislation in Germany?
+
 - What do these two statements have in common: 'The sun is shining' and 'It is bright outside'
+
 - How many calories does a pizza have?
