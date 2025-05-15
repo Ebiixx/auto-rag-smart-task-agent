@@ -37,24 +37,44 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
     {
       query: "If I save 60 € per month for 5 years, how much will I have?",
       tool: "calculateSavings",
+      expected: true,
     },
     {
       query:
         "If I eat 3 apples every day for 3 months and an apple costs 1.20€, how much will I have spent?",
       tool: "calculateGeneral",
+      expected: true,
     },
     {
       query: "What is the current status of CO₂ legislation in Germany?",
       tool: "webSearch",
+      expected: true,
     },
     {
       query:
         "What do these two statements have in common: 'The sun is shining' and 'It is bright outside'",
       tool: "compareTexts",
+      expected: true,
     },
     {
       query: "How many calories does a pizza have?",
       tool: "webSearch",
+      expected: true,
+    },
+    {
+      query: "What is the meaning of life?",
+      tool: "GPTIntern",
+      expected: false,
+    },
+    {
+      query: "Tell me a short story about a robot learning to paint",
+      tool: "GPTIntern",
+      expected: false,
+    },
+    {
+      query: "What are the three laws of robotics?",
+      tool: "GPTIntern",
+      expected: false,
     },
   ];
 
@@ -75,18 +95,38 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
         </div>
       </form>
 
-      <div className="example-queries">
-        <p>
-          <strong>Examples:</strong>
-        </p>
-        <ul>
+      <div className="example-section">
+        <h3 className="examples-title">Example Queries</h3>
+        <div className="example-cards">
           {examples.map((example, index) => (
-            <li key={index} onClick={() => handleExampleClick(example.query)}>
-              <span className="example-text">{example.query}</span>
-              <span className="example-tool">[Tool: {example.tool}]</span>
-            </li>
+            <div
+              key={index}
+              className={`example-card ${
+                example.expected ? "tool-card" : "general-card"
+              }`}
+              onClick={() => handleExampleClick(example.query)}
+            >
+              <div className="card-content">
+                <p className="example-query">{example.query}</p>
+                <div
+                  className={`tool-badge ${
+                    example.expected ? "expected-tool" : "general-tool"
+                  }`}
+                >
+                  {example.expected ? (
+                    <>
+                      <span className="tool-icon">🛠️</span> {example.tool}
+                    </>
+                  ) : (
+                    <>
+                      <span className="general-icon">💬</span> General AI
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
 
       <style jsx>{`
@@ -97,6 +137,7 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
         .input-container {
           display: flex;
           gap: 10px;
+          margin-bottom: 25px;
         }
 
         .chat-input {
@@ -129,42 +170,85 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
           background-color: #5670d8;
         }
 
-        .example-queries {
-          margin-top: 20px;
-          padding: 15px;
-          background-color: #f0f5ff;
+        .example-section {
+          margin-top: 30px;
+        }
+
+        .examples-title {
+          margin-bottom: 15px;
+          color: #333;
+          font-size: 1.1rem;
+        }
+
+        .example-cards {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 15px;
+        }
+
+        .example-card {
+          background-color: #fff;
           border-radius: 8px;
-          font-size: 0.9rem;
-        }
-
-        .example-queries ul {
-          margin: 0;
-          padding-left: 20px;
-        }
-
-        .example-queries li {
-          margin-bottom: 12px;
-          color: #444;
+          padding: 15px;
           cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .tool-card {
+          border-left: 4px solid #4361ee;
+        }
+
+        .general-card {
+          border-left: 4px solid #6c757d;
+        }
+
+        .example-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-content {
           display: flex;
           flex-direction: column;
+          height: 100%;
         }
 
-        .example-queries li:hover .example-text {
-          color: #6e8efb;
-          text-decoration: underline;
+        .example-query {
+          margin: 0 0 15px 0;
+          font-size: 0.95rem;
+          color: #333;
+          flex-grow: 1;
         }
 
-        .example-tool {
-          margin-top: 3px;
+        .tool-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 4px 10px;
+          border-radius: 20px;
           font-size: 0.75rem;
-          color: #666;
-          margin-left: 5px;
-          font-style: italic;
-          background-color: rgba(110, 142, 251, 0.1);
-          padding: 2px 6px;
-          border-radius: 4px;
-          display: inline-block;
+          font-weight: 500;
+          align-self: flex-start;
+        }
+
+        .expected-tool {
+          background-color: rgba(67, 97, 238, 0.1);
+          color: #4361ee;
+          border: 1px solid rgba(67, 97, 238, 0.2);
+        }
+
+        .general-tool {
+          background-color: rgba(108, 117, 125, 0.1);
+          color: #6c757d;
+          border: 1px solid rgba(108, 117, 125, 0.2);
+        }
+
+        .tool-icon,
+        .general-icon {
+          margin-right: 5px;
+          font-size: 0.9rem;
         }
       `}</style>
     </div>

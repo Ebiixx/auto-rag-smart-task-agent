@@ -2,6 +2,8 @@
 
 An intelligent application that recognizes task types and automatically employs the appropriate tools.
 
+![Smart Task Agent Interface](Screenshots/Screenshot_2.png)
+
 ## Features
 
 - 🧠 Automatic recognition of task type
@@ -25,9 +27,11 @@ An intelligent application that recognizes task types and automatically employs 
 3. The selected tool processes the query
 4. Results are displayed with an explanation of the system's reasoning
 
+![Example of calculation result](Screenshots/Screenshot_1.png)
+
 ### For Calculations
 
-The system uses specialized mathematical algorithms with financial precision. For general calculations, it creates a detailed explanation with step-by-step workings and mathematical reasoning.
+The system uses specialized mathematical algorithms with financial precision. For general calculations, it creates a detailed explanation with step-by-step workings and mathematical reasoning, including Python code for verification.
 
 ## System Architecture
 
@@ -39,6 +43,15 @@ This application implements a smart AI orchestration system that:
 4. **Provides transparency** by explaining tool selection decisions
 
 While similar to Retrieval-Augmented Generation (RAG) systems, our approach focuses on tool selection and task routing rather than pure knowledge retrieval. This creates a more adaptable system that can handle a diverse range of queries with specialized processing strategies.
+
+## User Interface
+
+The user interface is designed to be intuitive and informative:
+
+- A clean input area for entering queries
+- Tool-labeled example cards to show the system's capabilities
+- Detailed results with appropriate formatting based on the query type
+- Transparent explanations of which tool was used and why
 
 ## Technologies
 
@@ -58,7 +71,7 @@ While similar to Retrieval-Augmented Generation (RAG) systems, our approach focu
 The application requires the following environment variables in a `.env` file:
 
 REACT_APP_GLOBAL_LLM_SERVICE="AzureOpenAI" REACT_APP_AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="gpt-4o-mini" REACT_APP_AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME="ada" REACT_APP_AZURE_OPENAI_ENDPOINT="https://your-endpoint.openai.azure.com/" REACT_APP_AZURE_OPENAI_API_KEY="your-api-key"
-REACT_APP_RAPIDAPI_KEY=your_api_key
+REACT_APP_RAPIDAPI_KEY="your_api_key"
 
 ## Example Queries
 
