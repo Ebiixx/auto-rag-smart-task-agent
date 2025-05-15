@@ -92,7 +92,11 @@ The user interface is designed to be intuitive and informative:
 
 The application requires the following environment variables in a `.env` file:
 
-REACT_APP_GLOBAL_LLM_SERVICE="AzureOpenAI" REACT_APP_AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="gpt-4o-mini" REACT_APP_AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME="ada" REACT_APP_AZURE_OPENAI_ENDPOINT="https://your-endpoint.openai.azure.com/" REACT_APP_AZURE_OPENAI_API_KEY="your-api-key"
+REACT_APP_GLOBAL_LLM_SERVICE="AzureOpenAI"
+REACT_APP_AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="gpt-4o-mini"
+REACT_APP_AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME="ada"
+REACT_APP_AZURE_OPENAI_ENDPOINT="https://your-endpoint.openai.azure.com/"
+REACT_APP_AZURE_OPENAI_API_KEY="your-api-key"
 REACT_APP_RAPIDAPI_KEY="your_api_key"
 
 ## Example Queries
