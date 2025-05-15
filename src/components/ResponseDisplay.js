@@ -18,6 +18,28 @@ function ResponseDisplay({ response }) {
           </div>
         );
 
+      case "pythonCalculation":
+        return (
+          <div className="python-calculation-result">
+            <h3>Berechnungsergebnis</h3>
+            <div className="result-box">
+              <div className="result">{response.content.result}</div>
+            </div>
+
+            <div className="explanation-box">
+              <h4>Erklärung</h4>
+              <p>{response.content.explanation}</p>
+            </div>
+
+            <details className="python-code-details">
+              <summary>Python-Code anzeigen</summary>
+              <pre className="code-block">
+                <code>{response.content.pythonCode}</code>
+              </pre>
+            </details>
+          </div>
+        );
+
       case "comparison":
         return (
           <div className="comparison-result">
@@ -88,6 +110,60 @@ function ResponseDisplay({ response }) {
         .calculation-result .details {
           color: #666;
           font-style: italic;
+        }
+
+        .python-calculation-result .result-box {
+          background-color: #f0f8ff;
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 15px;
+        }
+
+        .python-calculation-result .result {
+          font-size: 1.1rem;
+          line-height: 1.5;
+          white-space: pre-line;
+        }
+
+        .python-calculation-result .explanation-box {
+          padding: 15px;
+          background-color: #f5f5f5;
+          border-radius: 8px;
+          margin-top: 15px;
+        }
+
+        .python-calculation-result .explanation-box h4 {
+          margin-top: 0;
+          color: #444;
+        }
+
+        .python-code-details {
+          margin-top: 20px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          overflow: hidden;
+        }
+
+        .python-code-details summary {
+          padding: 10px 15px;
+          background-color: #f5f5f5;
+          cursor: pointer;
+          font-weight: 500;
+        }
+
+        .python-code-details summary:hover {
+          background-color: #ececec;
+        }
+
+        .code-block {
+          margin: 0;
+          padding: 15px;
+          background-color: #2d2d2d;
+          color: #f8f8f2;
+          overflow-x: auto;
+          font-family: "Courier New", monospace;
+          font-size: 0.9rem;
+          line-height: 1.4;
         }
 
         .comparison-result .texts-container {

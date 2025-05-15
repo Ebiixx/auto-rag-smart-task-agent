@@ -40,6 +40,11 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
       tool: "BerechneSparbetrag",
     },
     {
+      query:
+        "Wenn ich für 3 Monate jeden Tag 3 Äpfel esse und ein Apfel kostet 1.20€, wie viel habe ich dann ausgegeben?",
+      tool: "BerechneAllgemein",
+    },
+    {
       query: "Was ist der aktuelle Stand der CO₂-Gesetzgebung in Deutschland?",
       tool: "WebSearch",
     },

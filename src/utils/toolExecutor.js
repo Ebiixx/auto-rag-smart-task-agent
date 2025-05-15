@@ -1,4 +1,5 @@
 import { BerechneSparbetrag } from "../tools/BerechneSparbetrag";
+import { BerechneAllgemein } from "../tools/BerechneAllgemein";
 import { VergleicheTexte } from "../tools/VergleicheTexte";
 import { WebSearch } from "../tools/WebSearch";
 import { askOpenAI } from "../api";
@@ -16,6 +17,9 @@ export async function executeTools(query, toolIdentification) {
     switch (primaryTool) {
       case "BerechneSparbetrag":
         return await executeCalculation(requiredData);
+
+      case "BerechneAllgemein":
+        return await executePythonCalculation(requiredData);
 
       case "VergleicheTexte":
         return await executeTextComparison(requiredData);
@@ -52,6 +56,46 @@ async function executeCalculation(data) {
     type: "calculation",
     content: result,
   };
+}
+
+/**
+ * Führt eine allgemeine Berechnung aus
+ * @param {object} data - Die Daten für die Berechnung
+ * @returns {Promise<object>} - Das Berechnungsergebnis
+ */
+async function executePythonCalculation(data) {
+  try {
+    console.log("executePythonCalculation mit Daten:", data);
+    const { query } = data;
+
+    // Sicherstellen, dass die Anfrage vorhanden ist
+    if (!query) {
+      console.error("Fehlende Berechnungsanfrage");
+      return {
+        type: "error",
+        content:
+          "Für die Berechnung wird eine klare Aufgabenstellung benötigt.",
+      };
+    }
+
+    const result = await BerechneAllgemein(query);
+
+    return {
+      type: "pythonCalculation",
+      content: {
+        result: result.result,
+        pythonCode: result.pythonCode,
+        explanation: result.explanation,
+        query: result.query,
+      },
+    };
+  } catch (error) {
+    console.error("Fehler bei der Ausführung von BerechneAllgemein:", error);
+    return {
+      type: "error",
+      content: `Es gab ein Problem bei der Berechnung: ${error.message}`,
+    };
+  }
 }
 
 /**

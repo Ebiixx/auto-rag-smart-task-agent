@@ -40,12 +40,20 @@ async function identifyRequiredTools(query) {
         content: `Du bist ein System zur Analyse von Benutzeranfragen. Deine Aufgabe ist es, zu erkennen, welche Art von Werkzeug für die Beantwortung der Anfrage verwendet werden sollte.
 
 Verfügbare Tools:
-1. "BerechneSparbetrag" - NUR für finanzielle Sparberechnungen mit Geldbeträgen, z.B. "Wenn ich 50€ pro Monat spare..."
-2. "VergleicheTexte" - Für den Vergleich von Texten und das Finden von Gemeinsamkeiten
-3. "WebSearch" - Für aktuelle Informationen, die eine Web-Recherche erfordern
-4. "GPTIntern" - Für allgemeine Fragen, einfache Mathematik, und alle anderen Anfragen, die keine speziellen Tools benötigen
+1. "BerechneSparbetrag" - AUSSCHLIESSLICH für langfristige finanzielle SPAR-Berechnungen, bei denen jemand regelmäßig Geld zurücklegt, z.B. "Wenn ich 50€ pro Monat spare..."
+2. "BerechneAllgemein" - Für ALLE anderen mathematischen Berechnungen, wie:
+   - Einfache und komplexe Mathematik
+   - Ausgabenberechnungen (z.B. "Wie viel kosten 3 Äpfel pro Tag für 3 Monate")
+   - Prozentberechnungen
+   - Zinsberechnungen (die keine monatlichen Sparraten betreffen)
+   - Statistische Berechnungen
+3. "VergleicheTexte" - Für den Vergleich von Texten und das Finden von Gemeinsamkeiten
+4. "WebSearch" - Für aktuelle Informationen, die eine Web-Recherche erfordern
+5. "GPTIntern" - Für allgemeine Fragen, die keine Berechnungen oder speziellen Tools benötigen
 
-WICHTIG: BerechneSparbetrag ist NUR für finanzielle Sparberechnungen zu verwenden, bei denen es um das regelmäßige Zurücklegen von Geld geht. Für alle anderen Berechnungen, auch einfache Multiplikationen oder Anzahlberechnungen, verwende GPTIntern.
+STRENGE REGEL: 
+- BerechneSparbetrag NUR für regelmäßiges Sparen mit festen Beträgen
+- BerechneAllgemein für ALLE anderen mathematischen Probleme
 
 Antworte im folgenden JSON-Format:
 {
@@ -57,12 +65,18 @@ Antworte im folgenden JSON-Format:
     "years": Anzahl Jahre als Nummer (nur der Zahlenwert),
     "interestRate": Zinssatz als Nummer (nur der Zahlenwert, optional)
     
+    // Für BerechneAllgemein:
+    "query": "Die vollständige Berechnungsaufgabe"
+    
     // Für VergleicheTexte:
     "text1": "Erster Text",
     "text2": "Zweiter Text"
     
     // Für WebSearch:
     "searchQuery": "Suchbegriff"
+    
+    // Für GPTIntern:
+    "query": "Die Originalanfrage"
   },
   "reasoning": "Kurze Begründung deiner Tool-Wahl"
 }`,
