@@ -2,7 +2,7 @@
 
 An intelligent application that recognizes task types and automatically employs the appropriate tools.
 
-![Smart Task Agent Interface](Screenshots/Screenshot_2.png)
+![Smart Task Agent Interface](Screenshots/Screenshot_1.png)
 
 ## Features
 
