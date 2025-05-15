@@ -25,44 +25,76 @@ export async function webSearch(query) {
 
 /**
  * Performs a Google search via RapidAPI
+ * @param {string} query
+ * @returns {Promise<Array>} Array of search results
  */
 async function performRapidGoogleSearch(query) {
-  try {
-    const encodedQuery = encodeURIComponent(query);
-    const url = `https://google-search72.p.rapidapi.com/search?q=${encodedQuery}&lr=en-US&num=10`;
+  const encodedQuery = encodeURIComponent(query);
+  const url = `https://google-search72.p.rapidapi.com/search?q=${encodedQuery}&lr=en-US&num=10`;
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "x-rapidapi-host": "google-search72.p.rapidapi.com",
-        "x-rapidapi-key": process.env.REACT_APP_RAPIDAPI_KEY,
-      },
-    });
+  const headers = {
+    "x-rapidapi-host": "google-search72.p.rapidapi.com",
+    "x-rapidapi-key": process.env.REACT_APP_RAPIDAPI_KEY,
+  };
 
-    if (!response.ok) {
-      throw new Error(`Search failed with status: ${response.status}`);
+  const maxRetries = 3;
+  let attempt = 0;
+
+  while (attempt < maxRetries) {
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers,
+      });
+
+      if (response.status === 403 || response.status === 429) {
+        attempt++;
+        const wait = 1000 * 2 ** attempt;
+        console.warn(`Rate limited or forbidden. Retrying in ${wait}ms...`);
+        await delay(wait);
+        continue;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Search failed with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data.items || data.items.length === 0) {
+        throw new Error("No search results returned from Google API");
+      }
+
+      return data.items.map((item) => ({
+        title: item.title || "Untitled",
+        url: item.link || "#",
+        snippet: item.snippet || "No description available",
+        source: "Google Search (RapidAPI)",
+      }));
+    } catch (error) {
+      attempt++;
+      console.error(`Attempt ${attempt} failed:`, error.message);
+      if (attempt >= maxRetries) {
+        throw new Error(
+          "Could not retrieve search results from Google API after multiple attempts."
+        );
+      }
+      const wait = 1000 * 2 ** attempt;
+      await delay(wait);
     }
-
-    const data = await response.json();
-
-    if (!data.items || data.items.length === 0) {
-      throw new Error("No search results returned from Google API");
-    }
-
-    return data.items.map((item) => ({
-      title: item.title || "Untitled",
-      url: item.link || "#",
-      snippet: item.snippet || "No description available",
-      source: "Google Search (RapidAPI)",
-    }));
-  } catch (error) {
-    console.error("RapidAPI Google Search error:", error);
-    throw new Error("Could not retrieve search results from Google API.");
   }
+}
+
+// Simple helper to wait
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
  * Summarizes web content using OpenAI
+ * @param {Array} searchResults - The search results to summarize
+ * @param {string} originalQuery - The original search query
+ * @returns {Promise<string>} - HTML formatted summary
  */
 async function summarizeWebContent(searchResults, originalQuery) {
   let html = `<h3>Search results for "${originalQuery}"</h3>`;
@@ -125,6 +157,8 @@ When analyzing search results:
 
 /**
  * Formats summary with basic HTML
+ * @param {string} text
+ * @returns {string}
  */
 function formatSummaryAsHTML(text) {
   return text

@@ -15,7 +15,7 @@ An intelligent application that recognizes task types and automatically employs 
 - **calculateSavings()**: Calculates savings totals with or without interest
 - **calculateGeneral()**: Performs precise mathematical calculations with detailed explanations
 - **compareTexts()**: Compares two texts for semantic similarities
-- **webSearch()**: Searches for current information on the web
+- **webSearch()**: Searches for current information on the web using Google Search API
 - **textSummarizer()**: Summarizes long texts
 
 ## How It Works
@@ -44,6 +44,7 @@ While similar to Retrieval-Augmented Generation (RAG) systems, our approach focu
 
 - React for the frontend
 - Azure OpenAI API for AI functions
+- RapidAPI Google Search for web queries
 - Modern JavaScript with async/await patterns
 
 ## Installation
@@ -57,7 +58,7 @@ While similar to Retrieval-Augmented Generation (RAG) systems, our approach focu
 The application requires the following environment variables in a `.env` file:
 
 REACT_APP_GLOBAL_LLM_SERVICE="AzureOpenAI" REACT_APP_AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="gpt-4o-mini" REACT_APP_AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME="ada" REACT_APP_AZURE_OPENAI_ENDPOINT="https://your-endpoint.openai.azure.com/" REACT_APP_AZURE_OPENAI_API_KEY="your-api-key"
-REACT_APP_DUCKDUCKGO_API_URL="https://api.duckduckgo.com/" REACT_APP_CORS_PROXY_URL="https://corsproxy.io/"
+REACT_APP_RAPIDAPI_KEY=your_api_key
 
 ## Example Queries
 
