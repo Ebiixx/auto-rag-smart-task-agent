@@ -13,7 +13,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>🧠 Smart Task Agent</h1>
-        <p>Ich verstehe deine Aufgabe und wähle das passende Tool</p>
+        <p>I understand your task and choose the appropriate tool</p>
       </header>
 
       <main className="app-content">
@@ -25,7 +25,7 @@ function App() {
 
         {loading && (
           <div className="loading-indicator">
-            <p>Denke nach...</p>
+            <p>Thinking...</p>
           </div>
         )}
 
@@ -35,7 +35,9 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>Smart Task Agent demonstriert KI-Toolauswahl nach Aufgabentyp</p>
+        <p>
+          Smart Task Agent demonstrates AI tool selection based on task type
+        </p>
       </footer>
     </div>
   );

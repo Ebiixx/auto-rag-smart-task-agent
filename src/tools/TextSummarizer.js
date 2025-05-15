@@ -1,17 +1,17 @@
 import { askOpenAI } from "../api";
 
 /**
- * Fasst einen Text mittels GPT zusammen
- * @param {string} text - Der zu zusammenfassende Text
- * @param {number} maxLength - Maximale Länge der Zusammenfassung in Wörtern
- * @returns {Promise<string>} - Zusammengefasster Text
+ * Summarizes text using GPT
+ * @param {string} text - The text to summarize
+ * @param {number} maxLength - Maximum length of the summary in words
+ * @returns {Promise<string>} - Summarized text
  */
-export async function TextSummarizer(text, maxLength = 200) {
+export async function textSummarizer(text, maxLength = 200) {
   try {
     const messages = [
       {
         role: "system",
-        content: `Du bist ein Experte im Zusammenfassen von Texten. Fasse den gegebenen Text in maximal ${maxLength} Wörtern zusammen. Behalte die wichtigsten Informationen bei.`,
+        content: `You are an expert in summarizing texts. Summarize the given text in at most ${maxLength} words. Keep the most important information.`,
       },
       {
         role: "user",
@@ -22,7 +22,7 @@ export async function TextSummarizer(text, maxLength = 200) {
     const response = await askOpenAI(messages);
     return response.choices[0].message.content;
   } catch (error) {
-    console.error("Fehler bei der Textzusammenfassung:", error);
-    return "Die Zusammenfassung konnte aufgrund eines technischen Problems nicht erstellt werden.";
+    console.error("Error during text summarization:", error);
+    return "The summary could not be created due to a technical problem.";
   }
 }

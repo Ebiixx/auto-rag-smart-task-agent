@@ -20,42 +20,41 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
       console.error("Error processing query:", error);
       setResponse({
         type: "error",
-        content: "Es gab ein Problem bei der Verarbeitung deiner Anfrage.",
+        content: "There was a problem processing your request.",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  // Neue Funktion, die das Beispiel in das Eingabefeld setzt
+  // New function that puts the example in the input field
   const handleExampleClick = (example) => {
     setUserInput(example);
   };
 
-  // Beispiele mit zugehörigen Tools
+  // Examples with associated tools
   const examples = [
     {
-      query:
-        "Wenn ich pro Monat 60 € für 5 Jahre spare, wie viel habe ich dann?",
-      tool: "BerechneSparbetrag",
+      query: "If I save 60 € per month for 5 years, how much will I have?",
+      tool: "calculateSavings",
     },
     {
       query:
-        "Wenn ich für 3 Monate jeden Tag 3 Äpfel esse und ein Apfel kostet 1.20€, wie viel habe ich dann ausgegeben?",
-      tool: "BerechneAllgemein",
+        "If I eat 3 apples every day for 3 months and an apple costs 1.20€, how much will I have spent?",
+      tool: "calculateGeneral",
     },
     {
-      query: "Was ist der aktuelle Stand der CO₂-Gesetzgebung in Deutschland?",
-      tool: "WebSearch",
+      query: "What is the current status of CO₂ legislation in Germany?",
+      tool: "webSearch",
     },
     {
       query:
-        "Was haben diese beiden Aussagen gemeinsam: 'Die Sonne scheint' und 'Es ist hell draußen'",
-      tool: "VergleicheTexte",
+        "What do these two statements have in common: 'The sun is shining' and 'It is bright outside'",
+      tool: "compareTexts",
     },
     {
-      query: "Wie viele Kalorien hat eine Pizza?",
-      tool: "WebSearch",
+      query: "How many calories does a pizza have?",
+      tool: "webSearch",
     },
   ];
 
@@ -67,18 +66,18 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
             type="text"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
-            placeholder="Stelle eine Frage oder gib eine Aufgabe ein..."
+            placeholder="Ask a question or input a task..."
             className="chat-input"
           />
           <button type="submit" className="send-button">
-            Senden
+            Send
           </button>
         </div>
       </form>
 
       <div className="example-queries">
         <p>
-          <strong>Beispiele:</strong>
+          <strong>Examples:</strong>
         </p>
         <ul>
           {examples.map((example, index) => (

@@ -1,30 +1,30 @@
-import { BerechneSparbetrag } from "../tools/BerechneSparbetrag";
-import { BerechneAllgemein } from "../tools/BerechneAllgemein";
-import { VergleicheTexte } from "../tools/VergleicheTexte";
-import { WebSearch } from "../tools/WebSearch";
+import { calculateSavings } from "../tools/SavingsCalculator";
+import { calculateGeneral } from "../tools/GeneralCalculator";
+import { compareTexts } from "../tools/TextComparer";
+import { webSearch } from "../tools/WebSearch";
 import { askOpenAI } from "../api";
 
 /**
- * Führt die identifizierten Tools aus und generiert eine Antwort
- * @param {string} query - Die ursprüngliche Anfrage des Nutzers
- * @param {object} toolIdentification - Die identifizierten Tools
- * @returns {Promise<object>} - Die generierte Antwort
+ * Executes the identified tools and generates a response
+ * @param {string} query - The original user query
+ * @param {object} toolIdentification - The identified tools
+ * @returns {Promise<object>} - The generated response
  */
 export async function executeTools(query, toolIdentification) {
   const { primaryTool, secondaryTool, requiredData } = toolIdentification;
 
   try {
     switch (primaryTool) {
-      case "BerechneSparbetrag":
+      case "calculateSavings":
         return await executeCalculation(requiredData);
 
-      case "BerechneAllgemein":
+      case "calculateGeneral":
         return await executePythonCalculation(requiredData);
 
-      case "VergleicheTexte":
+      case "compareTexts":
         return await executeTextComparison(requiredData);
 
-      case "WebSearch":
+      case "webSearch":
         return await executeWebSearch(requiredData);
 
       case "GPTIntern":
@@ -32,25 +32,25 @@ export async function executeTools(query, toolIdentification) {
         return await executeGPTIntern(query);
     }
   } catch (error) {
-    console.error("Fehler bei der Tool-Ausführung:", error);
+    console.error("Error during tool execution:", error);
 
-    // Fallback bei Fehlern
+    // Fallback for errors
     return {
       type: "error",
-      content: `Es gab ein Problem bei der Ausführung des Tools ${primaryTool}: ${error.message}`,
+      content: `There was a problem executing the tool ${primaryTool}: ${error.message}`,
     };
   }
 }
 
 /**
- * Führt eine Sparberechnung aus
- * @param {object} data - Die Daten für die Berechnung
- * @returns {Promise<object>} - Das Berechnungsergebnis
+ * Executes a savings calculation
+ * @param {object} data - The data for the calculation
+ * @returns {Promise<object>} - The calculation result
  */
 async function executeCalculation(data) {
   const { rate, years, interestRate = 0 } = data;
 
-  const result = BerechneSparbetrag(rate, years, interestRate);
+  const result = calculateSavings(rate, years, interestRate);
 
   return {
     type: "calculation",
@@ -59,26 +59,25 @@ async function executeCalculation(data) {
 }
 
 /**
- * Führt eine allgemeine Berechnung aus
- * @param {object} data - Die Daten für die Berechnung
- * @returns {Promise<object>} - Das Berechnungsergebnis
+ * Executes a general calculation
+ * @param {object} data - The data for the calculation
+ * @returns {Promise<object>} - The calculation result
  */
 async function executePythonCalculation(data) {
   try {
-    console.log("executePythonCalculation mit Daten:", data);
+    console.log("executePythonCalculation with data:", data);
     const { query } = data;
 
-    // Sicherstellen, dass die Anfrage vorhanden ist
+    // Ensure that the query exists
     if (!query) {
-      console.error("Fehlende Berechnungsanfrage");
+      console.error("Missing calculation query");
       return {
         type: "error",
-        content:
-          "Für die Berechnung wird eine klare Aufgabenstellung benötigt.",
+        content: "A clear task description is needed for the calculation.",
       };
     }
 
-    const result = await BerechneAllgemein(query);
+    const result = await calculateGeneral(query);
 
     return {
       type: "pythonCalculation",
@@ -90,23 +89,23 @@ async function executePythonCalculation(data) {
       },
     };
   } catch (error) {
-    console.error("Fehler bei der Ausführung von BerechneAllgemein:", error);
+    console.error("Error executing calculateGeneral:", error);
     return {
       type: "error",
-      content: `Es gab ein Problem bei der Berechnung: ${error.message}`,
+      content: `There was a problem with the calculation: ${error.message}`,
     };
   }
 }
 
 /**
- * Führt einen Textvergleich aus
- * @param {object} data - Die zu vergleichenden Texte
- * @returns {Promise<object>} - Das Vergleichsergebnis
+ * Executes a text comparison
+ * @param {object} data - The texts to compare
+ * @returns {Promise<object>} - The comparison result
  */
 async function executeTextComparison(data) {
   const { text1, text2 } = data;
 
-  const result = await VergleicheTexte(text1, text2);
+  const result = await compareTexts(text1, text2);
 
   return {
     type: "comparison",
@@ -115,14 +114,14 @@ async function executeTextComparison(data) {
 }
 
 /**
- * Führt eine Websuche aus
- * @param {object} data - Die Suchanfrage
- * @returns {Promise<object>} - Das Suchergebnis
+ * Executes a web search
+ * @param {object} data - The search query
+ * @returns {Promise<object>} - The search result
  */
 async function executeWebSearch(data) {
   const { searchQuery } = data;
 
-  const result = await WebSearch(searchQuery);
+  const result = await webSearch(searchQuery);
 
   return {
     type: "search",
@@ -131,9 +130,9 @@ async function executeWebSearch(data) {
 }
 
 /**
- * Verwendet nur GPT für die Beantwortung der Frage
- * @param {string} query - Die Anfrage des Nutzers
- * @returns {Promise<object>} - Die generierte Antwort
+ * Uses only GPT to answer the question
+ * @param {string} query - The user's query
+ * @returns {Promise<object>} - The generated answer
  */
 async function executeGPTIntern(query) {
   try {
@@ -141,7 +140,7 @@ async function executeGPTIntern(query) {
       {
         role: "system",
         content:
-          "Du bist ein hilfreicher Assistent, der Fragen präzise und informativ beantwortet.",
+          "You are a helpful assistant who answers questions precisely and informatively.",
       },
       {
         role: "user",
@@ -157,18 +156,18 @@ async function executeGPTIntern(query) {
       content: formatGPTResponse(content),
     };
   } catch (error) {
-    console.error("Fehler bei GPT Intern:", error);
+    console.error("Error with GPT Intern:", error);
     throw error;
   }
 }
 
 /**
- * Formatiert die GPT-Antwort als HTML
- * @param {string} text - Der zu formatierende Text
- * @returns {string} - Der formatierte HTML-Text
+ * Formats the GPT response as HTML
+ * @param {string} text - The text to format
+ * @returns {string} - The formatted HTML text
  */
 function formatGPTResponse(text) {
-  // Einfaches Markdown zu HTML
+  // Simple Markdown to HTML
   return text
     .replace(/\n\n/g, "<br/><br/>")
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")

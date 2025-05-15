@@ -2,19 +2,19 @@ import { askOpenAI } from "../api";
 import { executeTools } from "./toolExecutor";
 
 /**
- * Verarbeitet die Anfrage des Nutzers und identifiziert das passende Tool
- * @param {string} userQuery - Die Anfrage des Nutzers
- * @returns {Promise<object>} - Die Antwort und die Erklärung der Tool-Wahl
+ * Processes the user's request and identifies the appropriate tool
+ * @param {string} userQuery - The user's request
+ * @returns {Promise<object>} - The response and explanation of tool selection
  */
 export async function processUserQuery(userQuery) {
   try {
-    // 1. Erkenne den Typ der Anfrage und identifiziere benötigte Tools
+    // 1. Recognize the type of request and identify needed tools
     const toolIdentification = await identifyRequiredTools(userQuery);
 
-    // 2. Führe die identifizierten Tools aus
+    // 2. Execute the identified tools
     const toolResponse = await executeTools(userQuery, toolIdentification);
 
-    // 3. Erstelle die Erklärung für die Tool-Wahl
+    // 3. Create explanation for tool selection
     const explanation = generateExplanation(toolIdentification);
 
     return {
@@ -22,63 +22,63 @@ export async function processUserQuery(userQuery) {
       explanation,
     };
   } catch (error) {
-    console.error("Fehler bei der Verarbeitung der Anfrage:", error);
+    console.error("Error processing request:", error);
     throw error;
   }
 }
 
 /**
- * Identifiziert die für eine Anfrage benötigten Tools
- * @param {string} query - Die Anfrage des Nutzers
- * @returns {Promise<object>} - Informationen über die identifizierten Tools
+ * Identifies the tools needed for a request
+ * @param {string} query - The user's query
+ * @returns {Promise<object>} - Information about the identified tools
  */
 async function identifyRequiredTools(query) {
   try {
     const messages = [
       {
         role: "system",
-        content: `Du bist ein System zur Analyse von Benutzeranfragen. Deine Aufgabe ist es, zu erkennen, welche Art von Werkzeug für die Beantwortung der Anfrage verwendet werden sollte.
+        content: `You are a system for analyzing user requests. Your task is to recognize what type of tool should be used to answer the request.
 
-Verfügbare Tools:
-1. "BerechneSparbetrag" - AUSSCHLIESSLICH für langfristige finanzielle SPAR-Berechnungen, bei denen jemand regelmäßig Geld zurücklegt, z.B. "Wenn ich 50€ pro Monat spare..."
-2. "BerechneAllgemein" - Für ALLE anderen mathematischen Berechnungen, wie:
-   - Einfache und komplexe Mathematik
-   - Ausgabenberechnungen (z.B. "Wie viel kosten 3 Äpfel pro Tag für 3 Monate")
-   - Prozentberechnungen
-   - Zinsberechnungen (die keine monatlichen Sparraten betreffen)
-   - Statistische Berechnungen
-3. "VergleicheTexte" - Für den Vergleich von Texten und das Finden von Gemeinsamkeiten
-4. "WebSearch" - Für aktuelle Informationen, die eine Web-Recherche erfordern
-5. "GPTIntern" - Für allgemeine Fragen, die keine Berechnungen oder speziellen Tools benötigen
+Available Tools:
+1. "calculateSavings" - EXCLUSIVELY for long-term financial SAVING calculations, where someone regularly puts money aside, e.g. "If I save 50€ per month..."
+2. "calculateGeneral" - For ALL other mathematical calculations, such as:
+   - Simple and complex math
+   - Expense calculations (e.g. "How much do 3 apples per day cost for 3 months")
+   - Percentage calculations
+   - Interest calculations (that don't involve monthly savings)
+   - Statistical calculations
+3. "compareTexts" - For comparing texts and finding similarities
+4. "webSearch" - For current information that requires web research
+5. "GPTIntern" - For general questions that don't require calculations or special tools
 
-STRENGE REGEL: 
-- BerechneSparbetrag NUR für regelmäßiges Sparen mit festen Beträgen
-- BerechneAllgemein für ALLE anderen mathematischen Probleme
+STRICT RULE: 
+- calculateSavings ONLY for regular saving with fixed amounts
+- calculateGeneral for ALL other mathematical problems
 
-Antworte im folgenden JSON-Format:
+Answer in the following JSON format:
 {
-  "primaryTool": "Name des Haupttools",
-  "secondaryTool": "Name des optionalen Sekundärtools oder null",
+  "primaryTool": "Name of the main tool",
+  "secondaryTool": "Name of the optional secondary tool or null",
   "requiredData": {
-    // Für BerechneSparbetrag:
-    "rate": Betrag in Euro als Nummer (nur der Zahlenwert),
-    "years": Anzahl Jahre als Nummer (nur der Zahlenwert),
-    "interestRate": Zinssatz als Nummer (nur der Zahlenwert, optional)
+    // For calculateSavings:
+    "rate": Amount in euros as a number (just the number value),
+    "years": Number of years as a number (just the number value),
+    "interestRate": Interest rate as a number (just the number value, optional)
     
-    // Für BerechneAllgemein:
-    "query": "Die vollständige Berechnungsaufgabe"
+    // For calculateGeneral:
+    "query": "The complete calculation task"
     
-    // Für VergleicheTexte:
-    "text1": "Erster Text",
-    "text2": "Zweiter Text"
+    // For compareTexts:
+    "text1": "First text",
+    "text2": "Second text"
     
-    // Für WebSearch:
-    "searchQuery": "Suchbegriff"
+    // For webSearch:
+    "searchQuery": "Search term"
     
-    // Für GPTIntern:
-    "query": "Die Originalanfrage"
+    // For GPTIntern:
+    "query": "The original query"
   },
-  "reasoning": "Kurze Begründung deiner Tool-Wahl"
+  "reasoning": "Brief justification for your tool choice"
 }`,
       },
       {
@@ -90,41 +90,40 @@ Antworte im folgenden JSON-Format:
     const response = await askOpenAI(messages);
 
     try {
-      // Parse die JSON-Antwort
+      // Parse the JSON response
       const result = JSON.parse(response.choices[0].message.content);
-      console.log("Identifizierte Tools:", result);
+      console.log("Identified tools:", result);
       return result;
     } catch (parseError) {
-      console.error("Fehler beim Parsen der Tool-Erkennung:", parseError);
-      console.log("Erhaltene Antwort:", response.choices[0].message.content);
+      console.error("Error parsing tool recognition:", parseError);
+      console.log("Response received:", response.choices[0].message.content);
 
-      // Fallback: Wenn das JSON nicht geparst werden kann, verwenden wir GPTIntern
+      // Fallback: If the JSON can't be parsed, use GPTIntern
       return {
         primaryTool: "GPTIntern",
         secondaryTool: null,
         requiredData: { query },
-        reasoning:
-          "Konnte Anfrage nicht analysieren, verwende allgemeine Verarbeitung.",
+        reasoning: "Could not analyze request, using general processing.",
       };
     }
   } catch (error) {
-    console.error("Fehler bei der Tool-Erkennung:", error);
+    console.error("Error in tool recognition:", error);
     throw error;
   }
 }
 
 /**
- * Generiert eine Erklärung für die Tool-Wahl
- * @param {object} toolIdentification - Die identifizierten Tools
- * @returns {string} - Die Erklärung
+ * Generates an explanation for the tool choice
+ * @param {object} toolIdentification - The identified tools
+ * @returns {string} - The explanation
  */
 function generateExplanation(toolIdentification) {
   const { primaryTool, secondaryTool, reasoning } = toolIdentification;
 
-  let explanation = `Ich habe ${primaryTool} als primäres Tool verwendet, weil ${reasoning}`;
+  let explanation = `I used ${primaryTool} as the primary tool because ${reasoning}`;
 
   if (secondaryTool) {
-    explanation += ` Zusätzlich habe ich ${secondaryTool} verwendet, um das Ergebnis zu verfeinern.`;
+    explanation += ` Additionally, I used ${secondaryTool} to refine the result.`;
   }
 
   return explanation;

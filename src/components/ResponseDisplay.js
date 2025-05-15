@@ -8,7 +8,7 @@ function ResponseDisplay({ response }) {
       case "calculation":
         return (
           <div className="calculation-result">
-            <h3>Berechnungsergebnis</h3>
+            <h3>Calculation Result</h3>
             <div className="result-box">
               <span className="amount">{response.content.amount} €</span>
               {response.content.details && (
@@ -21,18 +21,18 @@ function ResponseDisplay({ response }) {
       case "pythonCalculation":
         return (
           <div className="python-calculation-result">
-            <h3>Berechnungsergebnis</h3>
+            <h3>Calculation Result</h3>
             <div className="result-box">
               <div className="result">{response.content.result}</div>
             </div>
 
             <div className="explanation-box">
-              <h4>Erklärung</h4>
+              <h4>Explanation</h4>
               <p>{response.content.explanation}</p>
             </div>
 
             <details className="python-code-details">
-              <summary>Python-Code anzeigen</summary>
+              <summary>Show Python Code</summary>
               <pre className="code-block">
                 <code>{response.content.pythonCode}</code>
               </pre>
@@ -43,7 +43,7 @@ function ResponseDisplay({ response }) {
       case "comparison":
         return (
           <div className="comparison-result">
-            <h3>Textvergleich</h3>
+            <h3>Text Comparison</h3>
             <div className="texts-container">
               <div className="text-box">
                 <h4>Text 1:</h4>
@@ -55,7 +55,7 @@ function ResponseDisplay({ response }) {
               </div>
             </div>
             <div className="comparison-analysis">
-              <h4>Gemeinsamkeiten:</h4>
+              <h4>Similarities:</h4>
               <p>{response.content.similarities}</p>
             </div>
           </div>

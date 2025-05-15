@@ -5,7 +5,7 @@ function ExplanationBox({ explanation }) {
 
   return (
     <div className="explanation-box">
-      <h3>🧰 So habe ich gearbeitet:</h3>
+      <h3>🧰 How I worked:</h3>
       <p>{explanation}</p>
 
       <style jsx>{`
