@@ -57,10 +57,12 @@ While similar to Retrieval-Augmented Generation (RAG) systems, our approach focu
 The application requires the following environment variables in a `.env` file:
 
 REACT_APP_GLOBAL_LLM_SERVICE="AzureOpenAI" REACT_APP_AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="gpt-4o-mini" REACT_APP_AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME="ada" REACT_APP_AZURE_OPENAI_ENDPOINT="https://your-endpoint.openai.azure.com/" REACT_APP_AZURE_OPENAI_API_KEY="your-api-key"
+REACT_APP_DUCKDUCKGO_API_URL="https://api.duckduckgo.com/" REACT_APP_CORS_PROXY_URL="https://corsproxy.io/"
 
 ## Example Queries
 
-- "If I save 60 € per month for 5 years, how much will I have?"
-- "What is the current status of CO₂ legislation in Germany?"
-- "What do these two statements have in common?"
-- "How many calories does a pizza have?"
+- If I save 60 € per month for 5 years, how much will I have?
+- If I eat 3 apples every day for 3 months and an apple costs 1.20€, how much will I have spent?
+- What is the current status of CO₂ legislation in Germany?
+- What do these two statements have in common: 'The sun is shining' and 'It is bright outside'
+- How many calories does a pizza have?

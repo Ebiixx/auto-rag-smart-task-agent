@@ -193,6 +193,69 @@ function ResponseDisplay({ response }) {
         .text-result p {
           margin-top: 0;
         }
+
+        .search-results {
+          margin-bottom: 20px;
+        }
+
+        .search-result {
+          padding: 15px;
+          border-bottom: 1px solid #eee;
+          margin-bottom: 10px;
+        }
+
+        .search-result h4 {
+          margin-top: 0;
+          margin-bottom: 8px;
+        }
+
+        .search-result a {
+          color: #1a0dab;
+          text-decoration: none;
+        }
+
+        .search-result a:hover {
+          text-decoration: underline;
+        }
+
+        .search-result p {
+          margin: 8px 0;
+          color: #4d5156;
+          font-size: 0.95rem;
+        }
+
+        .search-result .source {
+          display: block;
+          color: #70757a;
+          font-size: 0.8rem;
+          margin-top: 5px;
+        }
+
+        .search-summary {
+          margin-top: 25px;
+          padding: 20px;
+          background-color: #f8f9fa;
+          border-radius: 8px;
+          border-left: 4px solid #4285f4;
+        }
+
+        .search-summary h4 {
+          margin-top: 0;
+          margin-bottom: 12px;
+          color: #1a0dab;
+        }
+
+        .summary-content {
+          line-height: 1.6;
+        }
+
+        .error-message {
+          padding: 15px;
+          background-color: #fff3f3;
+          border-left: 4px solid #f44336;
+          border-radius: 4px;
+          margin: 10px 0;
+        }
       `}</style>
     </div>
   );
