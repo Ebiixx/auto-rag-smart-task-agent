@@ -1,4 +1,4 @@
-# Smart Task Agent
+# Auto RAG - Smart Task Agent
 
 An intelligent application that recognizes task types and automatically employs the appropriate tools.
 
