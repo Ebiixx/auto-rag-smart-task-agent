@@ -4,6 +4,10 @@ import { calculateGeneral } from "../tools/GeneralCalculator";
 import { compareTexts } from "../tools/TextComparer";
 import { webSearch } from "../tools/WebSearch";
 import { textSummarizer } from "../tools/TextSummarizer";
+import {
+  calculateBMI,
+  interpretHealthMetrics,
+} from "../tools/HealthInterpreter";
 
 /**
  * Dynamically chains multiple tools together to solve complex queries
@@ -100,6 +104,9 @@ Available tools:
 3. calculateGeneral - Performs general calculations
 4. calculateSavings - Calculates savings growth over time
 5. compareTexts - Compares two texts for similarities
+6. calculateBMI - Calculates Body Mass Index from height and weight
+7. interpretHealthMetrics - Interprets health metrics with medical context
+8. emotionalAnalysis - Analyzes the emotional tone of text
 
 For each tool, you need to specify what input to provide and may reference output from previous steps.
 
@@ -122,7 +129,9 @@ IMPORTANT RULES:
 - For webSearch + calculation, always put webSearch first
 - When using webSearch + textSummarizer, be explicit about what to extract
 - The input field should contain either exact text to use or specify to use "output from previous step"
-- Always provide specific inputs, never generic or placeholder inputs`,
+- Always provide specific inputs, never generic or placeholder inputs
+- For BMI calculation + interpretation, first use calculateBMI, then use interpretHealthMetrics
+- For emotional analysis of text, use compareTexts tool with appropriate parameters`,
     },
     {
       role: "user",
@@ -184,14 +193,17 @@ async function executeToolStep(
 
   // Determine the actual input to use for this step
   let actualInput = input;
+
+  // Check if input is a string before using includes()
   if (
+    typeof input === "string" &&
     input.includes("output from previous step") &&
     previousStepOutput !== null
   ) {
-    actualInput =
-      typeof previousStepOutput === "string"
-        ? previousStepOutput
-        : JSON.stringify(previousStepOutput);
+    actualInput = previousStepOutput;
+  } else if (typeof input === "object" && input !== null) {
+    // If it's already an object, use it directly
+    actualInput = input;
   }
 
   // Execute the appropriate tool
@@ -221,6 +233,40 @@ async function executeToolStep(
       const texts = extractTwoTexts(actualInput);
       const compareResult = await compareTexts(texts.text1, texts.text2);
       return compareResult.similarities;
+
+    case "calculateBMI":
+      // If input is already an object with heightCm and weightKg properties, use them directly
+      if (
+        typeof actualInput === "object" &&
+        actualInput.heightCm &&
+        actualInput.weightKg
+      ) {
+        return calculateBMI(actualInput.heightCm, actualInput.weightKg);
+      } else {
+        // Otherwise extract from text
+        const bmiParams = extractBMIParams(actualInput);
+        return calculateBMI(bmiParams.height, bmiParams.weight);
+      }
+
+    case "interpretHealthMetrics":
+      return await interpretHealthMetrics(actualInput);
+
+    case "emotionalAnalysis":
+      const emotionTexts = extractTwoTexts(actualInput);
+      // Use compareTexts but with a more specific focus
+      const messages = [
+        {
+          role: "system",
+          content:
+            "Analyze the emotional tone and sentiment of these texts, comparing their differences in intensity, positivity/negativity, and implied feelings.",
+        },
+        {
+          role: "user",
+          content: `Compare these texts emotionally:\nText 1: ${emotionTexts.text1}\nText 2: ${emotionTexts.text2}`,
+        },
+      ];
+      const response = await askOpenAI(messages);
+      return response.choices[0].message.content;
 
     case "GPTIntern":
       return await executeGPTStep(actualInput, previousSteps);
@@ -288,6 +334,23 @@ function extractTwoTexts(input) {
   return {
     text1: input.slice(0, middle).trim(),
     text2: input.slice(middle).trim(),
+  };
+}
+
+/**
+ * Extract BMI calculation parameters from text
+ * @param {string} input - Text containing height and weight parameters
+ * @returns {object} - Extracted parameters
+ */
+function extractBMIParams(input) {
+  // Extract height in cm
+  const heightMatch = input.match(/(\d+(?:\.\d+)?)\s*(?:cm|centimeters?)/i);
+  // Extract weight in kg
+  const weightMatch = input.match(/(\d+(?:\.\d+)?)\s*(?:kg|kilograms?)/i);
+
+  return {
+    height: heightMatch ? parseFloat(heightMatch[1]) : 170, // Default height
+    weight: weightMatch ? parseFloat(weightMatch[1]) : 70, // Default weight
   };
 }
 

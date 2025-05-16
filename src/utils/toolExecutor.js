@@ -11,7 +11,7 @@ import { askOpenAI } from "../api";
  * @returns {Promise<object>} - The generated response
  */
 export async function executeTools(query, toolIdentification) {
-  const { primaryTool, secondaryTool, requiredData } = toolIdentification;
+  const { primaryTool, requiredData } = toolIdentification;
 
   try {
     switch (primaryTool) {

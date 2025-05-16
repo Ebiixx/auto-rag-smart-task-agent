@@ -12,7 +12,12 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>🧠 Smart Task Agent</h1>
+        <h1>
+          <span role="img" aria-label="Brain">
+            🧠
+          </span>{" "}
+          Smart Task Agent
+        </h1>
         <p>I understand your task and choose the appropriate tool</p>
       </header>
 

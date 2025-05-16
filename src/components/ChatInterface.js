@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { processUserQuery } from "../utils/toolRecognition";
 import { dynamicToolChain } from "../core/dynamicToolChaining";
+import "./ChatInterface.css"; // Add this import
 
 function ChatInterface({ setResponse, setExplanation, setLoading }) {
   const [userInput, setUserInput] = useState("");
@@ -89,8 +90,6 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
       tool: "GPTIntern",
       expected: false,
     },
-    // Removed: "What are the three laws of robotics?"
-
     // Examples that benefit from tool chaining
     {
       query:
@@ -113,6 +112,18 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
     {
       query:
         "Calculate my BMI if I'm 180cm tall and weigh 75kg, then interpret what it means",
+      tool: "dynamicChain",
+      expected: true,
+    },
+    {
+      query:
+        "Compare these two sentences and analyze their emotional tone: 'I love this product!' and 'This product is acceptable.'",
+      tool: "dynamicChain",
+      expected: true,
+    },
+    {
+      query:
+        "Calculate the monthly payments on a 300,000€ mortgage over 30 years at 3.5% interest and explain the amortization",
       tool: "dynamicChain",
       expected: true,
     },
@@ -168,6 +179,8 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
                 handleExampleClick(example.query);
                 if (example.tool === "dynamicChain") {
                   setUseDynamicChain(true);
+                } else {
+                  setUseDynamicChain(false);
                 }
               }}
             >
@@ -184,15 +197,32 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
                 >
                   {example.tool === "dynamicChain" ? (
                     <>
-                      <span className="chain-icon">⛓️</span> Tool Chain
+                      <span
+                        className="chain-icon"
+                        role="img"
+                        aria-label="Chain"
+                      >
+                        ⛓️
+                      </span>{" "}
+                      Tool Chain
                     </>
                   ) : example.expected ? (
                     <>
-                      <span className="tool-icon">🛠️</span> {example.tool}
+                      <span className="tool-icon" role="img" aria-label="Tool">
+                        🛠️
+                      </span>{" "}
+                      {example.tool}
                     </>
                   ) : (
                     <>
-                      <span className="general-icon">💬</span> General AI
+                      <span
+                        className="general-icon"
+                        role="img"
+                        aria-label="Chat"
+                      >
+                        💬
+                      </span>{" "}
+                      General AI
                     </>
                   )}
                 </div>
@@ -201,175 +231,6 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        .chat-interface {
-          margin-bottom: 30px;
-        }
-
-        .input-container {
-          display: flex;
-          gap: 10px;
-          margin-bottom: 15px;
-        }
-
-        .dynamic-chain-toggle {
-          display: flex;
-          align-items: center;
-          margin-bottom: 25px;
-          padding: 10px;
-          background-color: rgba(110, 142, 251, 0.1);
-          border-radius: 8px;
-        }
-
-        .dynamic-chain-toggle input {
-          margin-right: 8px;
-        }
-
-        .toggle-label {
-          font-weight: 500;
-          color: #4361ee;
-          display: flex;
-          align-items: center;
-          margin-right: 12px;
-        }
-
-        .beta-badge {
-          background-color: #ff9800;
-          color: white;
-          font-size: 0.6rem;
-          padding: 2px 6px;
-          border-radius: 10px;
-          margin-left: 8px;
-        }
-
-        .toggle-description {
-          font-size: 0.8rem;
-          color: #666;
-        }
-
-        .chat-input {
-          flex: 1;
-          padding: 15px;
-          border: 2px solid #ddd;
-          border-radius: 8px;
-          font-size: 1rem;
-          transition: border-color 0.3s;
-        }
-
-        .chat-input:focus {
-          border-color: #a777e3;
-          outline: none;
-        }
-
-        .send-button {
-          padding: 0 25px;
-          background-color: #6e8efb;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 1rem;
-          font-weight: bold;
-          transition: background-color 0.3s;
-        }
-
-        .send-button:hover {
-          background-color: #5670d8;
-        }
-
-        .example-section {
-          margin-top: 30px;
-        }
-
-        .examples-title {
-          margin-bottom: 15px;
-          color: #333;
-          font-size: 1.1rem;
-        }
-
-        .example-cards {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 15px;
-        }
-
-        .example-card {
-          background-color: #fff;
-          border-radius: 8px;
-          padding: 15px;
-          cursor: pointer;
-          transition: transform 0.2s, box-shadow 0.2s;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .tool-card {
-          border-left: 4px solid #4361ee;
-        }
-
-        .general-card {
-          border-left: 4px solid #6c757d;
-        }
-
-        .chain-card {
-          border-left: 4px solid #ff9800;
-        }
-
-        .example-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-content {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-        }
-
-        .example-query {
-          margin: 0 0 15px 0;
-          font-size: 0.95rem;
-          color: #333;
-          flex-grow: 1;
-        }
-
-        .tool-badge {
-          display: inline-flex;
-          align-items: center;
-          padding: 4px 10px;
-          border-radius: 20px;
-          font-size: 0.75rem;
-          font-weight: 500;
-          align-self: flex-start;
-        }
-
-        .expected-tool {
-          background-color: rgba(67, 97, 238, 0.1);
-          color: #4361ee;
-          border: 1px solid rgba(67, 97, 238, 0.2);
-        }
-
-        .general-tool {
-          background-color: rgba(108, 117, 125, 0.1);
-          color: #6c757d;
-          border: 1px solid rgba(108, 117, 125, 0.2);
-        }
-
-        .chain-tool {
-          background-color: rgba(255, 152, 0, 0.1);
-          color: #ff9800;
-          border: 1px solid rgba(255, 152, 0, 0.2);
-        }
-
-        .tool-icon,
-        .general-icon,
-        .chain-icon {
-          margin-right: 5px;
-          font-size: 0.9rem;
-        }
-      `}</style>
     </div>
   );
 }

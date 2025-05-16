@@ -1,6 +1,4 @@
 import { askOpenAI } from "../api";
-const fs = require("fs").promises;
-const path = require("path");
 
 /**
  * Performs a general calculation by generating an explanation and solution

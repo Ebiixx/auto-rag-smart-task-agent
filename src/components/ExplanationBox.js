@@ -5,7 +5,12 @@ function ExplanationBox({ explanation }) {
 
   return (
     <div className="explanation-box">
-      <h3>🧰 How I worked:</h3>
+      <h3>
+        <span role="img" aria-label="Light bulb">
+          💡
+        </span>{" "}
+        How I worked:
+      </h3>
       <p>{explanation}</p>
 
       <style jsx>{`

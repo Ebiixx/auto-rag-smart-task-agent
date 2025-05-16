@@ -6,13 +6,29 @@
 - New UI component to enable/disable Dynamic Tool Chaining
 - Specialized example cards for tool chaining scenarios with distinct color coding
 - Wrapper functionality for passing data between tools
+- Additional non-web search tool chain examples for financial and health analysis
+- Emotional text analysis capability in dynamic tool chains
+- Auto-toggle for dynamic chaining when selecting chain examples
 
 ### Changed
 
 - Updated README to describe the new Tool Chaining functionality
 - Improved error handling for complex queries
+- Optimized tool chain workflow to properly handle intermediate results
+- Removed unused example "What are the three laws of robotics?"
+- Converted styled-jsx to standard CSS for better compatibility
+- Fixed accessibility issues with emoji elements
 
-## [1.0.0] - 2024-05-16
+### Fixed
+
+- React warnings for JSX attributes
+- Accessibility warnings for emoji usage
+- Unused variable warnings
+- Console errors related to styled-jsx
+- Type error in BMI calculation tool chaining
+- Input handling for object-based parameters in tool execution
+
+## [1.0.0] - 2024-05-15
 
 ### Added
 

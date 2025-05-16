@@ -28,7 +28,7 @@ An intelligent application that recognizes task types and automatically employs 
 3. The selected tool processes the query
 4. Results are displayed with an explanation of the system's reasoning
 
-![Example of calculation result](Screenshots/Screenshot_2.png)
+![Example of calculation result](Screenshots/Screenshot_1.png)
 
 ### For Calculations
 
@@ -48,6 +48,9 @@ Example chains:
 - Web search → Text summarization → Calculation
 - Web search → Text comparison
 - Calculation → Text formatting
+- Multiple calculations with result comparison
+- Text analysis with emotional context interpretation
+- Financial calculation with explanation of implications
 
 This feature allows the system to handle much more complex tasks that would be impossible with a single tool.
 
@@ -92,12 +95,19 @@ The application requires the following environment variables in a `.env` file:
 
 ## Example Queries
 
+### Basic Tool Queries
+
 - If I save 60 € per month for 5 years, how much will I have?
-
 - If I eat 3 apples every day for 3 months and an apple costs 1.20€, how much will I have spent?
-
 - What is the current status of CO₂ legislation in Germany?
-
 - What do these two statements have in common: 'The sun is shining' and 'It is bright outside'
-
 - How many calories does a pizza have?
+
+### Complex Tool Chain Queries
+
+- Search for the latest electric car models and calculate the average price
+- Look up the health benefits of apples and summarize them
+- Compare and summarize the differences between saving 100€ monthly for 10 years with 2% vs 4% interest
+- Calculate my BMI if I'm 180cm tall and weigh 75kg, then interpret what it means
+- Compare these two sentences and analyze their emotional tone: 'I love this product!' and 'This product is acceptable.'
+- Calculate the monthly payments on a 300,000€ mortgage over 30 years at 3.5% interest and explain the amortization
