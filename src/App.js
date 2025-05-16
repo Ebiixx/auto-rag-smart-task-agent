@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import ChatInterface from "./components/ChatInterface";
 import ResponseDisplay from "./components/ResponseDisplay";
 import ExplanationBox from "./components/ExplanationBox";
+import ToolChainResult from "./components/ToolChainResult";
 import "./styles/App.css";
 
 function App() {
   const [response, setResponse] = useState(null);
   const [explanation, setExplanation] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
 
   return (
     <div className="app">
@@ -37,6 +39,14 @@ function App() {
         {response && <ResponseDisplay response={response} />}
 
         {explanation && <ExplanationBox explanation={explanation} />}
+
+        {result && (
+          <ToolChainResult
+            result={result.result}
+            steps={result.steps}
+            explanation={result.explanation}
+          />
+        )}
       </main>
 
       <footer className="app-footer">

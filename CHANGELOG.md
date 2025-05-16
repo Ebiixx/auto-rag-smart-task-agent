@@ -44,6 +44,7 @@
 - Added fallback response generation for incomplete tool chain results
 - Fixed undefined getPlanForQuery function in dynamicToolChaining module
 - Resolved process is not defined error with environment variables
+- Improved Markdown parsing for GPT responses in `src/utils/toolExecutor.js` to correctly display headings (H1, H2, H3 as h3, h4, h5 respectively).
 
 ## [1.1.0] - 2024-07-17
 

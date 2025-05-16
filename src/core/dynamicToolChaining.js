@@ -209,62 +209,44 @@ async function executeToolStep(
 ) {
   const { tool, input } = step;
 
-  // Determine the actual input to use for this step
-  let actualInput = input;
+  // Function to resolve references, can be used anywhere
+  function resolveReference(inputValue) {
+    if (typeof inputValue === "string") {
+      // Case insensitive matching
+      const fromStepMatch = inputValue.match(/output from step (\d+)/i);
+      if (fromStepMatch && fromStepMatch[1]) {
+        const stepNumber = parseInt(fromStepMatch[1]);
+        if (
+          previousSteps.length >= stepNumber &&
+          previousSteps[stepNumber - 1]?.output
+        ) {
+          return previousSteps[stepNumber - 1].output;
+        }
+      }
 
-  // Process the input - handle references to previous step outputs
-  if (
-    typeof input === "string" &&
-    input.toLowerCase().includes("output from step")
-  ) {
-    // Extract step number from the input string - use case insensitive matching
-    const stepMatch = input.match(/output from step (\d+)/i);
-    if (stepMatch && stepMatch[1]) {
-      const stepNumber = parseInt(stepMatch[1]);
       if (
-        previousSteps.length >= stepNumber &&
-        previousSteps[stepNumber - 1]?.output
+        inputValue.toLowerCase().includes("output from previous step") &&
+        previousStepOutput !== null
       ) {
-        actualInput = previousSteps[stepNumber - 1].output;
+        return previousStepOutput;
       }
-    } else if (
-      input.toLowerCase().includes("output from previous step") &&
-      previousStepOutput !== null
-    ) {
-      actualInput = previousStepOutput;
     }
-  } else if (typeof input === "object" && input !== null) {
+    return inputValue; // Return original if no reference found
+  }
+
+  // Determine the actual input to use for this step
+  let actualInput = resolveReference(input);
+  console.log(`Processing step: ${tool}, input type:`, typeof actualInput);
+
+  // For object inputs, handle references in properties
+  if (typeof actualInput === "object" && actualInput !== null) {
     // Handle object inputs with references to previous steps
-    if (
-      typeof input.text1 === "string" &&
-      input.text1.toLowerCase().includes("output from step")
-    ) {
-      const stepMatch = input.text1.match(/output from step (\d+)/i);
-      if (stepMatch && stepMatch[1]) {
-        const stepNumber = parseInt(stepMatch[1]);
-        if (
-          previousSteps.length >= stepNumber &&
-          previousSteps[stepNumber - 1]?.output
-        ) {
-          input.text1 = previousSteps[stepNumber - 1].output;
-        }
-      }
+    if (typeof actualInput.text1 === "string") {
+      actualInput.text1 = resolveReference(actualInput.text1);
     }
 
-    if (
-      typeof input.text2 === "string" &&
-      input.text2.toLowerCase().includes("output from step")
-    ) {
-      const stepMatch = input.text2.match(/output from step (\d+)/i);
-      if (stepMatch && stepMatch[1]) {
-        const stepNumber = parseInt(stepMatch[1]);
-        if (
-          previousSteps.length >= stepNumber &&
-          previousSteps[stepNumber - 1]?.output
-        ) {
-          input.text2 = previousSteps[stepNumber - 1].output;
-        }
-      }
+    if (typeof actualInput.text2 === "string") {
+      actualInput.text2 = resolveReference(actualInput.text2);
     }
   }
 
@@ -414,21 +396,61 @@ The higher interest rate (${
       }
 
     case "calculateBMI":
+      console.log("BMI input received:", actualInput);
       // If input is already an object with height and weight properties, use them directly
       if (typeof actualInput === "object" && actualInput !== null) {
-        // Support both heightCm and height property names
-        const height = actualInput.heightCm || actualInput.height;
-        const weight = actualInput.weightKg || actualInput.weight;
+        // Support both heightCm and height property names, as well as height_cm naming pattern
+        const height =
+          actualInput.heightCm || actualInput.height || actualInput.height_cm;
+        const weight =
+          actualInput.weightKg || actualInput.weight || actualInput.weight_kg;
+
+        console.log(
+          `BMI calculation using: height=${height}cm, weight=${weight}kg`
+        );
 
         if (height && weight) {
-          return calculateBMI(height, weight);
+          const result = calculateBMI(height, weight);
+          console.log("BMI calculation result:", result);
+          return result;
         }
       }
       // Otherwise extract from text
       const bmiParams = extractBMIParams(actualInput);
-      return calculateBMI(bmiParams.height, bmiParams.weight);
+      console.log(
+        `Extracted BMI params: height=${bmiParams.height}cm, weight=${bmiParams.weight}kg`
+      );
+      const result = calculateBMI(bmiParams.height, bmiParams.weight);
+      console.log("BMI calculation result:", result);
+      return result;
 
     case "interpretHealthMetrics":
+      console.log("Health metrics input received:", actualInput);
+      // Double-check for unresolved references
+      actualInput = resolveReference(actualInput);
+
+      // Special handling for BMI results
+      if (actualInput && typeof actualInput === "object") {
+        if (actualInput.bmi) {
+          // Format BMI object for better interpretation
+          const formattedInput = `BMI: ${actualInput.bmi}
+Category: ${actualInput.category}
+Height: ${actualInput.heightCm} cm
+Weight: ${actualInput.weightKg} kg`;
+          console.log(
+            "Formatted BMI input for interpretation:",
+            formattedInput
+          );
+          return await interpretHealthMetrics(formattedInput);
+        }
+
+        // If it's not a BMI object, stringify it
+        console.log("Stringifying object for health metrics interpretation");
+        return await interpretHealthMetrics(JSON.stringify(actualInput));
+      }
+
+      // Handle string inputs
+      console.log("Passing input directly to health metrics interpretation");
       return await interpretHealthMetrics(actualInput);
 
     case "emotionalAnalysis":

@@ -1,5 +1,6 @@
 import React from "react";
 import "./ResponseDisplay.css"; // Create this file for the CSS
+import { formatGPTResponse } from "../utils/toolExecutor";
 
 function ResponseDisplay({ response }) {
   if (!response) return null;
@@ -63,11 +64,12 @@ function ResponseDisplay({ response }) {
         );
 
       case "dynamicChain":
+        const formattedContent = formatGPTResponse(response.content || "");
         return (
           <div className="dynamic-chain-result">
             <h3>Dynamic Tool Chaining Result</h3>
             <div className="result-box">
-              <div dangerouslySetInnerHTML={{ __html: response.content }} />
+              <div dangerouslySetInnerHTML={{ __html: formattedContent }} />
             </div>
             {response.steps && (
               <div className="chain-steps">
@@ -97,9 +99,14 @@ function ResponseDisplay({ response }) {
       case "search":
       case "text":
       default:
+        const defaultFormattedContent = formatGPTResponse(
+          response.content || ""
+        );
         return (
           <div className="text-result">
-            <div dangerouslySetInnerHTML={{ __html: response.content }} />
+            <div
+              dangerouslySetInnerHTML={{ __html: defaultFormattedContent }}
+            />
           </div>
         );
     }

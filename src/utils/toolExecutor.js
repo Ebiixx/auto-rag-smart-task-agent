@@ -166,12 +166,30 @@ async function executeGPTIntern(query) {
  * @param {string} text - The text to format
  * @returns {string} - The formatted HTML text
  */
-function formatGPTResponse(text) {
-  // Simple Markdown to HTML
-  return text
-    .replace(/\n\n/g, "<br/><br/>")
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/^# (.*$)/gm, "<h3>$1</h3>")
-    .replace(/^## (.*$)/gm, "<h4>$1</h4>");
+export function formatGPTResponse(text) {
+  if (!text) return ""; // Sicherstellen, dass Text vorhanden ist
+
+  let newText = text;
+
+  // Überschriften:
+  // Markdown H1 -> HTML H3
+  // Markdown H2 -> HTML H4
+  // Markdown H3 -> HTML H5
+  // Die Reihenfolge von spezifischer (###) zu weniger spezifischer (#) ist hier gute Praxis.
+  newText = newText.replace(/^### (.*$)/gm, "<h5>$1</h5>");
+  newText = newText.replace(/^## (.*$)/gm, "<h4>$1</h4>");
+  newText = newText.replace(/^# (.*$)/gm, "<h3>$1</h3>");
+
+  // Inline-Formatierungen
+  newText = newText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); // Fett
+  newText = newText.replace(/\*(.*?)\*/g, "<em>$1</em>"); // Kursiv
+
+  // Paragraphen: Doppelte Zeilenumbrüche zu <br/><br/>
+  // Dies sollte nach der Verarbeitung von Block-Elementen wie Überschriften erfolgen.
+  newText = newText.replace(/\n\n/g, "<br/><br/>");
+
+  // Optional: Einzelne Zeilenumbrüche (die nicht Teil von \n\n sind) ebenfalls in <br/> umwandeln.
+  // newText = newText.replace(/(?<!\r?\n)\r?\n(?!\r?\n)/g, "<br/>");
+
+  return newText;
 }
