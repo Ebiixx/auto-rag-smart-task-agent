@@ -45,7 +45,7 @@ For complex queries that require multiple processing steps, the system can:
 
 Below is an example of a multi-step tool chain in action, where the system first calculates savings for two different scenarios and then compares the texts of these calculation results:
 
-![Example of a dynamic tool chain result](Screenshots/Screenshot_dynamic_chain_example.png)
+![Example of a dynamic tool chain result](Screenshots/Screenshot_3.png)
 
 Example chains:
 
