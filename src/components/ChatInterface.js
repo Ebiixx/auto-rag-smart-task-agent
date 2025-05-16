@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { processUserQuery } from "../utils/toolRecognition";
+import { dynamicToolChain } from "../core/dynamicToolChaining";
 
 function ChatInterface({ setResponse, setExplanation, setLoading }) {
   const [userInput, setUserInput] = useState("");
+  const [useDynamicChain, setUseDynamicChain] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,9 +15,25 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
     setExplanation(null);
 
     try {
-      const { response, explanation } = await processUserQuery(userInput);
-      setResponse(response);
-      setExplanation(explanation);
+      if (useDynamicChain) {
+        // Use dynamic tool chaining for complex queries
+        const { result, steps } = await dynamicToolChain(userInput);
+
+        setResponse({
+          type: "dynamicChain",
+          content: result,
+          steps: steps,
+        });
+
+        setExplanation(
+          "Dynamic Tool Chaining was used to process your request step by step."
+        );
+      } else {
+        // Use the standard single-tool approach
+        const { response, explanation } = await processUserQuery(userInput);
+        setResponse(response);
+        setExplanation(explanation);
+      }
     } catch (error) {
       console.error("Error processing query:", error);
       setResponse({
@@ -71,10 +89,32 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
       tool: "GPTIntern",
       expected: false,
     },
+    // Removed: "What are the three laws of robotics?"
+
+    // Examples that benefit from tool chaining
     {
-      query: "What are the three laws of robotics?",
-      tool: "GPTIntern",
-      expected: false,
+      query:
+        "Search for the latest electric car models and calculate the average price",
+      tool: "dynamicChain",
+      expected: true,
+    },
+    {
+      query: "Look up the health benefits of apples and summarize them",
+      tool: "dynamicChain",
+      expected: true,
+    },
+    // New non-web search tool chain examples
+    {
+      query:
+        "Compare and summarize the differences between saving 100€ monthly for 10 years with 2% vs 4% interest",
+      tool: "dynamicChain",
+      expected: true,
+    },
+    {
+      query:
+        "Calculate my BMI if I'm 180cm tall and weigh 75kg, then interpret what it means",
+      tool: "dynamicChain",
+      expected: true,
     },
   ];
 
@@ -93,6 +133,22 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
             Send
           </button>
         </div>
+        <div className="dynamic-chain-toggle">
+          <label>
+            <input
+              type="checkbox"
+              checked={useDynamicChain}
+              onChange={() => setUseDynamicChain(!useDynamicChain)}
+            />
+            <span className="toggle-label">
+              Enable Dynamic Tool Chaining
+              <span className="beta-badge">BETA</span>
+            </span>
+          </label>
+          <span className="toggle-description">
+            Automatically combine multiple tools to solve complex tasks
+          </span>
+        </div>
       </form>
 
       <div className="example-section">
@@ -102,18 +158,35 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
             <div
               key={index}
               className={`example-card ${
-                example.expected ? "tool-card" : "general-card"
+                example.tool === "dynamicChain"
+                  ? "chain-card"
+                  : example.expected
+                  ? "tool-card"
+                  : "general-card"
               }`}
-              onClick={() => handleExampleClick(example.query)}
+              onClick={() => {
+                handleExampleClick(example.query);
+                if (example.tool === "dynamicChain") {
+                  setUseDynamicChain(true);
+                }
+              }}
             >
               <div className="card-content">
                 <p className="example-query">{example.query}</p>
                 <div
                   className={`tool-badge ${
-                    example.expected ? "expected-tool" : "general-tool"
+                    example.tool === "dynamicChain"
+                      ? "chain-tool"
+                      : example.expected
+                      ? "expected-tool"
+                      : "general-tool"
                   }`}
                 >
-                  {example.expected ? (
+                  {example.tool === "dynamicChain" ? (
+                    <>
+                      <span className="chain-icon">⛓️</span> Tool Chain
+                    </>
+                  ) : example.expected ? (
                     <>
                       <span className="tool-icon">🛠️</span> {example.tool}
                     </>
@@ -137,7 +210,42 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
         .input-container {
           display: flex;
           gap: 10px;
+          margin-bottom: 15px;
+        }
+
+        .dynamic-chain-toggle {
+          display: flex;
+          align-items: center;
           margin-bottom: 25px;
+          padding: 10px;
+          background-color: rgba(110, 142, 251, 0.1);
+          border-radius: 8px;
+        }
+
+        .dynamic-chain-toggle input {
+          margin-right: 8px;
+        }
+
+        .toggle-label {
+          font-weight: 500;
+          color: #4361ee;
+          display: flex;
+          align-items: center;
+          margin-right: 12px;
+        }
+
+        .beta-badge {
+          background-color: #ff9800;
+          color: white;
+          font-size: 0.6rem;
+          padding: 2px 6px;
+          border-radius: 10px;
+          margin-left: 8px;
+        }
+
+        .toggle-description {
+          font-size: 0.8rem;
+          color: #666;
         }
 
         .chat-input {
@@ -205,6 +313,10 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
           border-left: 4px solid #6c757d;
         }
 
+        .chain-card {
+          border-left: 4px solid #ff9800;
+        }
+
         .example-card:hover {
           transform: translateY(-2px);
           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -245,8 +357,15 @@ function ChatInterface({ setResponse, setExplanation, setLoading }) {
           border: 1px solid rgba(108, 117, 125, 0.2);
         }
 
+        .chain-tool {
+          background-color: rgba(255, 152, 0, 0.1);
+          color: #ff9800;
+          border: 1px solid rgba(255, 152, 0, 0.2);
+        }
+
         .tool-icon,
-        .general-icon {
+        .general-icon,
+        .chain-icon {
           margin-right: 5px;
           font-size: 0.9rem;
         }
