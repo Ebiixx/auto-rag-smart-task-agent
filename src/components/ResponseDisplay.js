@@ -61,6 +61,38 @@ function ResponseDisplay({ response }) {
           </div>
         );
 
+      case "dynamicChain":
+        return (
+          <div className="dynamic-chain-result">
+            <h3>Dynamic Tool Chaining Result</h3>
+            <div className="result-box">
+              <div dangerouslySetInnerHTML={{ __html: response.content }} />
+            </div>
+            {response.steps && (
+              <div className="chain-steps">
+                <h4>Tool Chain Steps:</h4>
+                <ol>
+                  {response.steps.map((step, idx) => (
+                    <li key={idx}>
+                      <strong>{step.tool}</strong>
+                      {step.output && (
+                        <details>
+                          <summary>Show Output</summary>
+                          <pre style={{ whiteSpace: "pre-wrap" }}>
+                            {typeof step.output === "string"
+                              ? step.output
+                              : JSON.stringify(step.output, null, 2)}
+                          </pre>
+                        </details>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+          </div>
+        );
+
       case "search":
       case "text":
       default:

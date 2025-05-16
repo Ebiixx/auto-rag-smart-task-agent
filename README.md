@@ -2,40 +2,30 @@
 
 An intelligent application that recognizes task types and automatically employs the appropriate tools.
 
-![Smart Task Agent Interface](Screenshots/Screenshot_1.png)
+![Smart Task Agent Interface](Screenshots/Screenshot_2.png)
 
 ## Features
 
 - 🧠 Automatic recognition of task type
-
 - 🔢 Financial and general calculations with high precision
-
 - 📊 Text analysis and comparison
-
 - 🔍 Web search for questions requiring research
-
 - 💬 General AI answers for simple questions
+- ⛓️ **Dynamic Tool Chaining** (BETA) - Automatically combines multiple tools to solve complex tasks
 
 ## Available Tools
 
 - **calculateSavings()**: Calculates savings totals with or without interest
-
 - **calculateGeneral()**: Performs precise mathematical calculations with detailed explanations
-
 - **compareTexts()**: Compares two texts for semantic similarities
-
 - **webSearch()**: Searches for current information on the web using Google Search API
-
 - **textSummarizer()**: Summarizes long texts
 
 ## How It Works
 
 1. The user submits a query
-
 2. The system analyzes the query to determine the appropriate tool
-
 3. The selected tool processes the query
-
 4. Results are displayed with an explanation of the system's reasoning
 
 ![Example of calculation result](Screenshots/Screenshot_2.png)
@@ -44,48 +34,49 @@ An intelligent application that recognizes task types and automatically employs 
 
 The system uses specialized mathematical algorithms with financial precision. For general calculations, it creates a detailed explanation with step-by-step workings and mathematical reasoning, including Python code for verification.
 
+### Dynamic Tool Chaining
+
+For complex queries that require multiple processing steps, the system can:
+
+1. Analyze the query and create a step-by-step tool execution plan
+2. Execute each tool in sequence, using outputs from previous steps as inputs to subsequent steps
+3. Combine the results into a cohesive answer
+4. Provide transparency by showing the chain of tools used
+
+Example chains:
+
+- Web search → Text summarization → Calculation
+- Web search → Text comparison
+- Calculation → Text formatting
+
+This feature allows the system to handle much more complex tasks that would be impossible with a single tool.
+
 ## System Architecture
 
 This application implements a smart AI orchestration system that:
 
 1.  **Analyzes queries** to identify the underlying task type
-
 2.  **Selects specialized tools** appropriate for each task
-
 3.  **Routes processing** to task-specific handlers
-
 4.  **Provides transparency** by explaining tool selection decisions
 
 While similar to Retrieval-Augmented Generation (RAG) systems, our approach focuses on tool selection and task routing rather than pure knowledge retrieval. This creates a more adaptable system that can handle a diverse range of queries with specialized processing strategies.
 
-## User Interface
+## Changelog
 
-The user interface is designed to be intuitive and informative:
-
-- A clean input area for entering queries
-
-- Tool-labeled example cards to show the system's capabilities
-
-- Detailed results with appropriate formatting based on the query type
-
-- Transparent explanations of which tool was used and why
+See the [CHANGELOG.md](CHANGELOG.md) file for a detailed list of changes for each version of the project.
 
 ## Technologies
 
 - React for the frontend
-
 - Azure OpenAI API for AI functions
-
 - RapidAPI Google Search for web queries
-
 - Modern JavaScript with async/await patterns
 
 ## Installation
 
 1. Clone the repository
-
 2. Install dependencies with `npm install`
-
 3. Start the application with `npm start`
 
 ## Environment Variables
