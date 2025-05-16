@@ -9,6 +9,8 @@
 - Additional non-web search tool chain examples for financial and health analysis
 - Emotional text analysis capability in dynamic tool chains
 - Auto-toggle for dynamic chaining when selecting chain examples
+- Health interpretation tools for BMI calculation and analysis
+- Comprehensive documentation of tool chain examples in README
 
 ### Changed
 
@@ -18,6 +20,7 @@
 - Removed unused example "What are the three laws of robotics?"
 - Converted styled-jsx to standard CSS for better compatibility
 - Fixed accessibility issues with emoji elements
+- Enhanced the formatting of health metric interpretations
 
 ### Fixed
 
@@ -27,8 +30,11 @@
 - Console errors related to styled-jsx
 - Type error in BMI calculation tool chaining
 - Input handling for object-based parameters in tool execution
+- Fixed text comparison functionality to handle object inputs directly
+- Fixed BMI calculation in tool chaining when input is provided as an object
+- Fixed styling issues in ResponseDisplay component
 
-## [1.0.0] - 2024-05-15
+## [1.1.0] - 2024-07-17
 
 ### Added
 

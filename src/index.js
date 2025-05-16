@@ -9,3 +9,7 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+if (window.ENV && window.ENV !== "production") {
+  // Development-only code
+}

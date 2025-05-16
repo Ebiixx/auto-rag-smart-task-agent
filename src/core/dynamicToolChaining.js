@@ -176,6 +176,79 @@ IMPORTANT RULES:
 }
 
 /**
+ * Extract savings calculation parameters from text
+ * @param {string} input - Text containing savings parameters
+ * @returns {object} - Extracted parameters
+ */
+function extractSavingsParams(input) {
+  // This is a simplistic parameter extraction
+  // In a real-world app, use a more robust approach
+  const rateMatch = input.match(
+    /(\d+(?:\.\d+)?)\s*(?:€|EUR|euros?|per month)/i
+  );
+  const yearsMatch = input.match(/(\d+(?:\.\d+)?)\s*(?:years?|yr)/i);
+  const interestMatch = input.match(
+    /(\d+(?:\.\d+)?)\s*(?:%|percent|interest)/i
+  );
+
+  return {
+    rate: rateMatch ? parseFloat(rateMatch[1]) : 100,
+    years: yearsMatch ? parseFloat(yearsMatch[1]) : 5,
+    interestRate: interestMatch ? parseFloat(interestMatch[1]) : 0,
+  };
+}
+
+/**
+ * Extract two texts from an input string or object
+ * @param {string|object} input - Input which contains two texts
+ * @returns {object} - Object with text1 and text2 properties
+ */
+function extractTwoTexts(input) {
+  // If input is already an object with text1 and text2 properties, use it directly
+  if (
+    typeof input === "object" &&
+    input !== null &&
+    input.text1 &&
+    input.text2
+  ) {
+    return {
+      text1: input.text1,
+      text2: input.text2,
+    };
+  }
+
+  // Otherwise, try to extract from string
+  if (typeof input === "string") {
+    // Try to find patterns like 'text1: "something" text2: "something else"'
+    const text1Match = input.match(
+      /(?:text1:|first text:|'|")([^'"]*?)(?:'|")/i
+    );
+    const text2Match = input.match(
+      /(?:text2:|second text:|'|")([^'"]*?)(?:'|")/i
+    );
+
+    if (text1Match && text2Match) {
+      return {
+        text1: text1Match[1].trim(),
+        text2: text2Match[1].trim(),
+      };
+    }
+
+    // Try to split by 'and' if the above didn't work
+    const parts = input.split(/\band\b|,|\bvs\.?\b|\bversus\b/i);
+    if (parts.length >= 2) {
+      return {
+        text1: parts[0].replace(/['"]/g, "").trim(),
+        text2: parts[1].replace(/['"]/g, "").trim(),
+      };
+    }
+  }
+
+  // If all else fails
+  throw new Error("Could not extract two separate texts from the input");
+}
+
+/**
  * Executes a single step in the tool chain
  * @param {object} step - The step configuration
  * @param {string} originalQuery - The original query
@@ -219,40 +292,73 @@ async function executeToolStep(
       return calcResult.result;
 
     case "calculateSavings":
-      // Parse parameters from input
-      const params = extractSavingsParams(actualInput);
-      const saveResult = calculateSavings(
-        params.rate,
-        params.years,
-        params.interestRate
-      );
-      return saveResult;
+      // Parse parameters from input if it's a string
+      if (typeof actualInput === "string") {
+        const params = extractSavingsParams(actualInput);
+        const saveResult = calculateSavings(
+          params.rate,
+          params.years,
+          params.interestRate
+        );
+        return saveResult;
+      } else {
+        // If it's an object, use the properties directly
+        const saveResult = calculateSavings(
+          actualInput.rate || actualInput.amount,
+          actualInput.years || actualInput.period,
+          actualInput.interestRate || 0
+        );
+        return saveResult;
+      }
 
     case "compareTexts":
-      // Split input into two texts
-      const texts = extractTwoTexts(actualInput);
+      // Get the two texts either from object or by extracting from string
+      let texts;
+      if (
+        typeof actualInput === "object" &&
+        actualInput.text1 &&
+        actualInput.text2
+      ) {
+        texts = actualInput;
+      } else {
+        texts = extractTwoTexts(actualInput);
+      }
       const compareResult = await compareTexts(texts.text1, texts.text2);
       return compareResult.similarities;
 
     case "calculateBMI":
-      // If input is already an object with heightCm and weightKg properties, use them directly
-      if (
-        typeof actualInput === "object" &&
-        actualInput.heightCm &&
-        actualInput.weightKg
-      ) {
-        return calculateBMI(actualInput.heightCm, actualInput.weightKg);
-      } else {
-        // Otherwise extract from text
-        const bmiParams = extractBMIParams(actualInput);
-        return calculateBMI(bmiParams.height, bmiParams.weight);
+      // If input is already an object with height and weight properties, use them directly
+      if (typeof actualInput === "object" && actualInput !== null) {
+        // Support both heightCm and height property names
+        const height = actualInput.heightCm || actualInput.height;
+        const weight = actualInput.weightKg || actualInput.weight;
+
+        if (height && weight) {
+          return calculateBMI(height, weight);
+        }
       }
+      // Otherwise extract from text
+      const bmiParams = extractBMIParams(actualInput);
+      return calculateBMI(bmiParams.height, bmiParams.weight);
 
     case "interpretHealthMetrics":
       return await interpretHealthMetrics(actualInput);
 
     case "emotionalAnalysis":
-      const emotionTexts = extractTwoTexts(actualInput);
+      // Handle object or string input
+      let emotionTexts;
+      if (
+        typeof actualInput === "object" &&
+        actualInput.text1 &&
+        actualInput.text2
+      ) {
+        emotionTexts = actualInput;
+      } else if (typeof actualInput === "string") {
+        emotionTexts = extractTwoTexts(actualInput);
+      } else {
+        throw new Error("Invalid input format for emotional analysis");
+      }
+
       // Use compareTexts but with a more specific focus
       const messages = [
         {
@@ -274,84 +380,6 @@ async function executeToolStep(
     default:
       throw new Error(`Unknown tool: ${tool}`);
   }
-}
-
-/**
- * Extract savings calculation parameters from text
- * @param {string} input - Text containing savings parameters
- * @returns {object} - Extracted parameters
- */
-function extractSavingsParams(input) {
-  // This is a simplistic parameter extraction
-  // In a real-world app, use a more robust approach
-  const rateMatch = input.match(
-    /(\d+(?:\.\d+)?)\s*(?:€|EUR|euros?|per month)/i
-  );
-  const yearsMatch = input.match(/(\d+(?:\.\d+)?)\s*(?:years?|yr)/i);
-  const interestMatch = input.match(
-    /(\d+(?:\.\d+)?)\s*(?:%|percent|interest)/i
-  );
-
-  return {
-    rate: rateMatch ? parseFloat(rateMatch[1]) : 100,
-    years: yearsMatch ? parseFloat(yearsMatch[1]) : 5,
-    interestRate: interestMatch ? parseFloat(interestMatch[1]) : 0,
-  };
-}
-
-/**
- * Extract two texts for comparison from input
- * @param {string} input - Text containing two texts to compare
- * @returns {object} - Two extracted texts
- */
-function extractTwoTexts(input) {
-  // Try to find text enclosed in quotes
-  const quotes = input.match(/"([^"]*)"|'([^']*)'|`([^`]*)`/g);
-
-  if (quotes && quotes.length >= 2) {
-    return {
-      text1: quotes[0].replace(/['"``]/g, ""),
-      text2: quotes[1].replace(/['"``]/g, ""),
-    };
-  }
-
-  // If quotes not found, try to split on common separators
-  const separators = ["vs", "versus", "and", "with", ";", ","];
-  for (const separator of separators) {
-    if (input.toLowerCase().includes(separator)) {
-      const parts = input.split(new RegExp(separator, "i"));
-      if (parts.length >= 2) {
-        return {
-          text1: parts[0].trim(),
-          text2: parts[1].trim(),
-        };
-      }
-    }
-  }
-
-  // Fallback: split in the middle
-  const middle = Math.floor(input.length / 2);
-  return {
-    text1: input.slice(0, middle).trim(),
-    text2: input.slice(middle).trim(),
-  };
-}
-
-/**
- * Extract BMI calculation parameters from text
- * @param {string} input - Text containing height and weight parameters
- * @returns {object} - Extracted parameters
- */
-function extractBMIParams(input) {
-  // Extract height in cm
-  const heightMatch = input.match(/(\d+(?:\.\d+)?)\s*(?:cm|centimeters?)/i);
-  // Extract weight in kg
-  const weightMatch = input.match(/(\d+(?:\.\d+)?)\s*(?:kg|kilograms?)/i);
-
-  return {
-    height: heightMatch ? parseFloat(heightMatch[1]) : 170, // Default height
-    weight: weightMatch ? parseFloat(weightMatch[1]) : 70, // Default weight
-  };
 }
 
 /**
@@ -451,4 +479,31 @@ async function formatChainResult(originalQuery, explanation, result) {
       }
     </style>
   `;
+}
+
+/**
+ * Extract BMI calculation parameters from text
+ * @param {string} input - Text containing height and weight parameters
+ * @returns {object} - Extracted parameters
+ */
+function extractBMIParams(input) {
+  if (typeof input !== "string") {
+    // Default values if input is not a string
+    return {
+      height: 170,
+      weight: 70,
+    };
+  }
+
+  // Extract height in cm
+  const heightMatch = input.match(
+    /(\d+(?:\.\d+)?)\s*(?:cm|centimeters?|tall)/i
+  );
+  // Extract weight in kg
+  const weightMatch = input.match(/(\d+(?:\.\d+)?)\s*(?:kg|kilograms?|weigh)/i);
+
+  return {
+    height: heightMatch ? parseFloat(heightMatch[1]) : 170, // Default height
+    weight: weightMatch ? parseFloat(weightMatch[1]) : 70, // Default weight
+  };
 }
