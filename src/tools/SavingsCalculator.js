@@ -1,98 +1,94 @@
 /**
- * Calculates the total amount after regular saving
- * @param {number|string} rate - Monthly savings amount in euros
- * @param {number|string} years - Number of years
- * @param {number|string} interestRate - Annual interest rate in percentage (optional)
- * @returns {object} - Calculated result with amount and details
+ * Calculate savings growth over time
+ * @param {number} monthlyAmount - Amount saved per month
+ * @param {number} years - Duration in years
+ * @param {number} interestRate - Annual interest rate as decimal (e.g., 0.05 for 5%)
+ * @returns {object} - Calculation result with amount and details
  */
-export function calculateSavings(rate, years, interestRate = 0) {
-  console.log("calculateSavings called with:", {
-    rate,
+export function calculateSavings(monthlyAmount, years, interestRate = 0) {
+  console.log(`calculateSavings called with:`, {
+    rate: monthlyAmount,
     years,
     interestRate,
   });
 
   try {
     // Validate inputs
-    if (
-      rate === undefined ||
-      rate === null ||
-      years === undefined ||
-      years === null
-    ) {
+    if (!monthlyAmount || !years) {
       throw new Error(
         "Missing parameters: Please provide a monthly amount and duration."
       );
     }
 
-    // Convert strings to numbers and remove € signs or commas if necessary
-    if (typeof rate === "string") {
-      rate = rate.replace("€", "").replace(",", ".").trim();
-    }
-    rate = parseFloat(rate);
+    // Ensure parameters are numbers
+    monthlyAmount = Number(monthlyAmount);
+    years = Number(years);
+    interestRate = Number(interestRate) || 0;
 
-    if (typeof years === "string") {
-      years = parseInt(years.replace("years", "").trim(), 10);
-    } else {
-      years = parseInt(years, 10);
+    if (isNaN(monthlyAmount) || isNaN(years) || isNaN(interestRate)) {
+      throw new Error("Invalid parameters: Please provide valid numbers.");
     }
 
-    if (typeof interestRate === "string") {
-      interestRate = interestRate.replace("%", "").replace(",", ".").trim();
-    }
-    interestRate = parseFloat(interestRate || 0);
+    // Extract relevant values with fallbacks
+    const rate =
+      monthlyAmount ||
+      monthlyAmount ||
+      monthlyAmount ||
+      monthlyAmount ||
+      monthlyAmount ||
+      100;
 
-    // Check if conversion was successful
-    if (isNaN(rate) || isNaN(years) || isNaN(interestRate)) {
-      console.error("Invalid values after conversion:", {
-        rate,
-        years,
-        interestRate,
-      });
-      throw new Error("Invalid inputs for calculation");
-    }
-
-    if (rate <= 0 || years <= 0) {
-      throw new Error("Amount and years must be greater than 0");
+    // Convert interest rate from percentage to decimal if needed
+    let effectiveInterestRate = interestRate;
+    if (interestRate > 1) {
+      effectiveInterestRate = interestRate / 100;
     }
 
-    // Simple sum without interest
-    const basicSum = rate * 12 * years;
+    const totalYears = years || 10;
 
-    // Calculate with interest if interest rate > 0
-    if (interestRate <= 0) {
-      return {
-        amount: basicSum.toFixed(2),
-        details: `${rate} € × 12 months × ${years} years = ${basicSum.toFixed(
-          2
-        )} €`,
-      };
-    } else {
+    // Calculate total contributions
+    const months = totalYears * 12;
+    const totalContribution = rate * months;
+
+    // Calculate with interest if applicable
+    let finalAmount;
+    let interestEarned = 0;
+
+    if (effectiveInterestRate > 0) {
       // Monthly interest rate
-      const monthlyRate = interestRate / 100 / 12;
-      let totalAmount = 0;
+      const monthlyRate = effectiveInterestRate / 12;
 
-      // Calculate for each month
-      for (let month = 0; month < years * 12; month++) {
-        // Add the saved amount
-        totalAmount += rate;
-        // Calculate and add interest for this month
-        totalAmount *= 1 + monthlyRate;
-      }
-
-      const interestGain = totalAmount - basicSum;
-
-      return {
-        amount: totalAmount.toFixed(2),
-        details: `Basic amount: ${basicSum.toFixed(
-          2
-        )} € + Interest gain: ${interestGain.toFixed(
-          2
-        )} € at ${interestRate}% interest p.a.`,
-      };
+      // Formula for future value of periodic payment
+      // FV = PMT × ((1 + r)^n - 1) / r
+      // Where: PMT = periodic payment, r = interest rate per period, n = number of periods
+      finalAmount =
+        rate *
+        ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) *
+        (1 + monthlyRate);
+      interestEarned = finalAmount - totalContribution;
+    } else {
+      finalAmount = totalContribution;
     }
+
+    // Format results
+    const details =
+      effectiveInterestRate > 0
+        ? `Total investment: ${totalContribution.toFixed(
+            2
+          )}€, Interest earned: ${interestEarned.toFixed(2)}€`
+        : `Total investment over ${totalYears} years`;
+
+    return {
+      amount: finalAmount.toFixed(2),
+      totalContribution: totalContribution.toFixed(2),
+      interestEarned: interestEarned.toFixed(2),
+      years: totalYears,
+      monthlyAmount: rate.toFixed(2),
+      annualInterestRate: (effectiveInterestRate * 100).toFixed(2),
+      details: details,
+    };
   } catch (error) {
-    console.error("Error in calculateSavings:", error);
+    console.log("Error in calculateSavings:", error);
     throw new Error(`Invalid inputs for calculation: ${error.message}`);
   }
 }

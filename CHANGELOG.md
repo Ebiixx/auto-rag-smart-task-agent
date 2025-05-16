@@ -11,6 +11,7 @@
 - Auto-toggle for dynamic chaining when selecting chain examples
 - Health interpretation tools for BMI calculation and analysis
 - Comprehensive documentation of tool chain examples in README
+- Development environment configuration for easier setup
 
 ### Changed
 
@@ -21,6 +22,7 @@
 - Converted styled-jsx to standard CSS for better compatibility
 - Fixed accessibility issues with emoji elements
 - Enhanced the formatting of health metric interpretations
+- Improved code documentation with JSDoc comments
 
 ### Fixed
 
@@ -33,6 +35,15 @@
 - Fixed text comparison functionality to handle object inputs directly
 - Fixed BMI calculation in tool chaining when input is provided as an object
 - Fixed styling issues in ResponseDisplay component
+- Added missing extractBMIParams function definition
+- Fixed parameter mapping for calculateSavings in tool chaining
+- Improved parameter extraction for various tools to handle AI planner outputs
+- Added better error handling for edge cases in tool executions
+- Fixed "step output" reference handling in multi-step tool chains
+- Enhanced comparison tool to properly format calculation results for better readability
+- Added fallback response generation for incomplete tool chain results
+- Fixed undefined getPlanForQuery function in dynamicToolChaining module
+- Resolved process is not defined error with environment variables
 
 ## [1.1.0] - 2024-07-17
 
